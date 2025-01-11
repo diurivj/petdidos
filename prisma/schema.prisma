@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  googleId     String   @unique
+  photoUrl     String?
+  petsReported Pet[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Pet {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  name         String?
+  status       PetStatus
+  photo        String?
+  description  String
+  contactPhone String?
+  location     Location
+  reportDate   DateTime
+  breed        Breed     @relation(fields: [breedId], references: [id])
+  breedId      String    @db.ObjectId
+  petType      PetType   @relation(fields: [petTypeId], references: [id])
+  petTypeId    String    @db.ObjectId
+  reporter     User      @relation(fields: [reporterId], references: [id])
+  reporterId   String    @db.ObjectId
+  history      History[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Breed {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  pet       Pet[]
+  petType   PetType? @relation(fields: [petTypeId], references: [id])
+  petTypeId String?  @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PetType {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  pet       Pet[]
+  breeds    Breed[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model History {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  description String
+  status      PetStatus
+  photo       String?
+  pet         Pet?      @relation(fields: [petId], references: [id])
+  petId       String?   @db.ObjectId
+}
+
+enum PetStatus {
+  ALIVE
+  INJURIED
+  SAFE
+  DEAD
+}
+
+type Location {
+  type        String  @default("Point")
+  coordinates Float[]
+}
