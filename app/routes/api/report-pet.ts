@@ -1,3 +1,4 @@
+import sharp from 'sharp'
 import { redirect } from 'react-router'
 import { prisma } from '~/utils/db.server'
 import { UTApi } from 'uploadthing/server'
@@ -69,10 +70,18 @@ async function uploadFile(file: File) {
   if (!token) {
     throw new Error('Upload thing is not defined')
   }
-  const utapi = new UTApi({
-    token
+  const utapi = new UTApi({ token })
+  const buffer = await sharp(await file.arrayBuffer())
+    .resize({ width: 500, height: 500 })
+    .webp({ quality: 50 })
+    .toFormat('webp')
+    .toBuffer()
+
+  const compressed = new File([buffer], file.name, {
+    type: 'image/webp'
   })
-  const { data, error } = await utapi.uploadFiles(file)
+
+  const { data, error } = await utapi.uploadFiles(compressed)
   if (error) {
     throw error
   }
