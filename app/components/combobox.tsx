@@ -38,7 +38,7 @@ export function Combobox({
           <ChevronsUpDown className='opacity-50' />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className='w-full p-0'>
+      <PopoverContent className='z-20 w-full p-0'>
         <Command>
           <CommandInput placeholder='Buscar raza...' className='h-9' />
           <CommandList>

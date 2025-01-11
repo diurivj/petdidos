@@ -13,7 +13,7 @@ import {
 import type { Route } from './+types/report-pet'
 import { type action as fetcherAction } from './api/get-location-details'
 import { prisma } from '~/utils/db.server'
-import { CAT, MAPBOX_SESSION, MAPBOX_TOKEN } from '~/utils/constants'
+import { CAT, MAPBOX_SESSION } from '~/utils/constants'
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { Combobox } from '~/components/combobox'
 import { useDebounceFetcher } from '~/utils/use-debounced-fetcher'
@@ -34,6 +34,11 @@ export async function action({ request }: Route.ActionArgs) {
 
   if (!q || typeof q !== 'string') {
     throw new Error('Something went wrong')
+  }
+
+  const { MAPBOX_TOKEN } = process.env
+  if (!MAPBOX_TOKEN) {
+    throw new Error('Mapbox token is not defined')
   }
 
   const response = await fetch(
@@ -165,9 +170,13 @@ export default function ReportPet({ loaderData }: Route.ComponentProps) {
       <form
         method='post'
         action='/api/report-pet'
+        encType='multipart/form-data'
         className='my-7 grid grid-cols-2 gap-4'
       >
-        <div className='col-span-full space-y-0.5'></div>
+        <div className='col-span-full space-y-0.5'>
+          <Label htmlFor='pet-photo'>Foto</Label>
+          <Input id='pet-photo' name='pet-photo' type='file' accept='image/*' />
+        </div>
         <div className='col-span-full space-y-0.5'>
           <Label htmlFor='pet-name'>Nombre</Label>
           <Input id='pet-name' name='pet-name' className='text-sm' />
@@ -237,7 +246,7 @@ export default function ReportPet({ loaderData }: Route.ComponentProps) {
               ))}
             </ul>
           ) : null}
-          <div id='map' className='aspect-video h-[240px] w-full'></div>
+          <div id='map' className='z-10 aspect-video w-full'></div>
           <input
             id='coordinates'
             name='coordinates'

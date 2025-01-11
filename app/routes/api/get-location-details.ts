@@ -1,4 +1,4 @@
-import { MAPBOX_SESSION, MAPBOX_TOKEN } from '~/utils/constants'
+import { MAPBOX_SESSION } from '~/utils/constants'
 import type { Route } from './+types/get-location-details'
 
 export async function action({ request }: Route.ActionArgs) {
@@ -7,6 +7,11 @@ export async function action({ request }: Route.ActionArgs) {
 
   if (!id || typeof id !== 'string') {
     throw new Error('Something went wrong')
+  }
+
+  const { MAPBOX_TOKEN } = process.env
+  if (!MAPBOX_TOKEN) {
+    throw new Error('Mapbox token is not defined')
   }
 
   const response = await fetch(
