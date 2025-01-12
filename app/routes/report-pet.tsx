@@ -17,7 +17,8 @@ import { CAT, MAPBOX_SESSION } from '~/utils/constants'
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { Combobox } from '~/components/combobox'
 import { useDebounceFetcher } from '~/utils/use-debounced-fetcher'
-import { useFetcher } from 'react-router'
+import { redirect, useFetcher } from 'react-router'
+import { getSession } from '~/utils/session.server'
 
 type Suggestion = {
   full_address: string
@@ -49,12 +50,28 @@ export async function action({ request }: Route.ActionArgs) {
   return { suggestions: data.suggestions as Suggestion[] }
 }
 
-export async function loader({}: Route.LoaderArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get('Cookie'))
+  const userId = session.get('userId')
+
+  if (!userId) {
+    throw redirect('/login')
+  }
+
   const breeds = await prisma.breed.findMany({
     select: { name: true, petTypeId: true }
   })
   const petTypes = await prisma.petType.findMany({
     select: { name: true, id: true }
+  })
+
+  const x = await prisma.pet.findMany({
+    where: {
+      reporterId: userId
+    },
+    include: {
+      reporter: true
+    }
   })
 
   return {
@@ -277,19 +294,6 @@ export default function ReportPet({ loaderData }: Route.ComponentProps) {
             className='resize-none text-sm'
             required
           ></Textarea>
-        </div>
-        <div className='col-span-full space-y-0.5'>
-          <Label htmlFor='reporter-name'>Tu nombre</Label>
-          <Input id='reporter-name' name='reporter-name' className='text-sm' />
-        </div>
-        <div className='col-span-full space-y-0.5'>
-          <Label htmlFor='reporter-email'>Tu correo electrónico</Label>
-          <Input
-            id='reporter-email'
-            name='reporter-email'
-            className='text-sm'
-            type='email'
-          />
         </div>
         <div className='col-span-full space-y-0.5'>
           <Label htmlFor='reporter-phone'>Tu teléfono</Label>

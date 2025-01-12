@@ -3,8 +3,17 @@ import { redirect } from 'react-router'
 import { prisma } from '~/utils/db.server'
 import { UTApi } from 'uploadthing/server'
 import type { Route } from './+types/report-pet'
+import { getSession } from '~/utils/session.server'
+import { validateInput } from '~/utils/validate-input'
 
 export async function action({ request }: Route.ActionArgs) {
+  const session = await getSession(request.headers.get('Cookie'))
+  const userId = session.get('userId')
+
+  if (!userId) {
+    throw new Error('401 - Unauthorized')
+  }
+
   const formData = await request.formData()
   const name = validateInput(formData.get('pet-name') || '')
   const type = validateInput(formData.get('pet-type'))
@@ -12,6 +21,7 @@ export async function action({ request }: Route.ActionArgs) {
   const coordinates = validateInput(formData.get('coordinates'))
   const date = validateInput(formData.get('pet-last-location-date'))
   const description = validateInput(formData.get('pet-description'))
+  const phone = validateInput(formData.get('reporter-phone'))
   const file = validateFileInput(formData.get('pet-photo'))
 
   const breedId = await prisma.breed.findUnique({
@@ -38,7 +48,8 @@ export async function action({ request }: Route.ActionArgs) {
       status: 'ALIVE',
       description,
       photo,
-      reporterId: '678287a77df5837d25598439', // TODO: harcoded
+      contactPhone: phone,
+      reporterId: userId,
       reportDate: new Date(date),
       location: {
         type: 'Point',
@@ -47,14 +58,7 @@ export async function action({ request }: Route.ActionArgs) {
     }
   })
 
-  return redirect(`/encontrar/mascota/${petCreated.id}`)
-}
-
-function validateInput(input: FormDataEntryValue | null) {
-  if (typeof input !== 'string') {
-    throw new Error('Invalid payload')
-  }
-  return input
+  return redirect(`/mascota/${petCreated.id}`)
 }
 
 function validateFileInput(input: FormDataEntryValue | null) {

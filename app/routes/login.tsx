@@ -6,6 +6,28 @@ import {
   CardHeader,
   CardTitle
 } from '~/components/ui/card'
+import { authenticator } from '~/utils/authentication.server'
+
+import type { Route } from './+types/login'
+import { getSession } from '~/utils/session.server'
+import { redirect } from 'react-router'
+
+export function meta({}: Route.MetaArgs) {
+  return [{ title: 'Iniciar sesión | Petdidos' }]
+}
+
+export async function action({ request }: Route.ActionArgs) {
+  await authenticator.authenticate('google-auth', request)
+}
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get('Cookie'))
+  const user = session.get('userId')
+  if (user) {
+    throw redirect('/reportar-mascota')
+  }
+  return null
+}
 
 export default function Login() {
   return (
@@ -18,7 +40,7 @@ export default function Login() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form method='post'>
             <Button size='lg' className='w-full'>
               <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
                 <path
