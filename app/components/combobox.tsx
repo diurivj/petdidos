@@ -17,6 +17,7 @@ type ComboboxProps = {
   value: string
   setValue: (value: string) => void
   options: { label: string; value: string }[]
+  zIndex?: string
 }
 
 export function Combobox({
@@ -24,7 +25,8 @@ export function Combobox({
   options,
   value,
   setValue,
-  setOpen
+  setOpen,
+  zIndex
 }: ComboboxProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -38,7 +40,7 @@ export function Combobox({
           <ChevronsUpDown className='opacity-50' />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className='z-20 w-full p-0'>
+      <PopoverContent className={cn('z-20 w-full p-0', zIndex)}>
         <Command>
           <CommandInput placeholder='Buscar raza...' className='h-9' />
           <CommandList>

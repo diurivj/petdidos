@@ -6,9 +6,11 @@ import {
   Scripts,
   ScrollRestoration
 } from 'react-router'
-
+import { Navbar } from './components/navbar'
 import type { Route } from './+types/root'
+
 import stylesheet from './app.css?url'
+import { getSession } from './utils/session.server'
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -29,6 +31,12 @@ export const links: Route.LinksFunction = () => [
   },
   { rel: 'stylesheet', href: stylesheet }
 ]
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get('Cookie'))
+  const userId = session.get('userId')
+  return { userId }
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -57,7 +65,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  )
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

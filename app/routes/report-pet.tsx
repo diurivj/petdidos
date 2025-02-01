@@ -13,17 +13,15 @@ import {
 import type { Route } from './+types/report-pet'
 import { type action as fetcherAction } from './api/get-location-details'
 import { prisma } from '~/utils/db.server'
-import { CAT, MAPBOX_SESSION } from '~/utils/constants'
+import { MAPBOX_SESSION } from '~/utils/constants'
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { Combobox } from '~/components/combobox'
 import { useDebounceFetcher } from '~/utils/use-debounced-fetcher'
 import { redirect, useFetcher } from 'react-router'
 import { getSession } from '~/utils/session.server'
-
-type Suggestion = {
-  full_address: string
-  mapbox_id: string
-}
+import { PetStatus } from '@prisma/client'
+import { petTypeMap, statusMap } from '~/utils/mappers'
+import type { Suggestion } from '~/utils/types'
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: 'Reportar mascota | Petdidas' }]
@@ -65,15 +63,6 @@ export async function loader({ request }: Route.LoaderArgs) {
     select: { name: true, id: true }
   })
 
-  const x = await prisma.pet.findMany({
-    where: {
-      reporterId: userId
-    },
-    include: {
-      reporter: true
-    }
-  })
-
   return {
     breeds,
     petTypes
@@ -108,6 +97,7 @@ export default function ReportPet({ loaderData }: Route.ComponentProps) {
 
   useEffect(() => {
     if (window !== undefined) {
+      if (ref.current) return
       // @ts-ignore
       let map = window.L.map('map').fitWorld()
       // @ts-ignore
@@ -207,7 +197,7 @@ export default function ReportPet({ loaderData }: Route.ComponentProps) {
             <SelectContent>
               {petTypes.map(petType => (
                 <SelectItem key={petType.name} value={petType.id}>
-                  {petType.name === CAT ? 'Gato' : 'Perro'}
+                  {petTypeMap[petType.name as 'DOG' | 'CAT']}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -238,6 +228,29 @@ export default function ReportPet({ loaderData }: Route.ComponentProps) {
             readOnly
             hidden
           />
+        </div>
+        <div className='col-span-full'>
+          <Label htmlFor='pet-status'>Estatus</Label>
+
+          <Select name='pet-status' required>
+            <SelectTrigger>
+              <SelectValue placeholder='Estatus' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={PetStatus.ALIVE}>
+                {statusMap['ALIVE']}
+              </SelectItem>
+              <SelectItem value={PetStatus.SAFE}>
+                {statusMap['SAFE']}
+              </SelectItem>
+              <SelectItem value={PetStatus.INJURIED}>
+                {statusMap['INJURIED']}
+              </SelectItem>
+              <SelectItem value={PetStatus.DEAD}>
+                {statusMap['DEAD']}
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div className='col-span-full lg:col-span-1'>
           <Label htmlFor='pet-last-location'>

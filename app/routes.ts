@@ -8,11 +8,15 @@ import {
 export default [
   index('routes/home.tsx'),
   route('/reportar-mascota', 'routes/report-pet.tsx'),
+  route('/encontrar-mascota', 'routes/find-pet.tsx'),
+  route('/mascotas', 'routes/pets.tsx'),
   route('/login', 'routes/login.tsx'),
+  route('/logout', 'routes/logout.tsx'),
   route('/auth/callback', 'routes/auth-redirect.tsx'),
-  route('/mascota/:id', 'routes/pet-detail.tsx'),
+  route('/mascotas/:id', 'routes/pet-detail.tsx'),
   ...prefix('api', [
     route('get-location-details', 'routes/api/get-location-details.ts'),
+    route('get-location-suggestions', 'routes/api/get-location-suggestions.ts'),
     route('report-pet', 'routes/api/report-pet.ts')
   ])
 ] satisfies RouteConfig

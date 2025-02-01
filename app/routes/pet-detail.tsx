@@ -1,6 +1,6 @@
 import type { Route } from './+types/pet-detail'
-import { useEffect } from 'react'
-import { redirect } from 'react-router'
+import { useEffect, type FormEvent } from 'react'
+import { redirect, useFetcher } from 'react-router'
 import { Badge } from '~/components/ui/badge'
 import { ScrollArea } from '@radix-ui/react-scroll-area'
 import { AlertCircle, Calendar } from 'lucide-react'
@@ -18,6 +18,8 @@ import {
   SelectValue,
   SelectContent
 } from '~/components/ui/select'
+import { statusMap } from '~/utils/mappers'
+import { PetCard } from '~/components/pet-card'
 
 export function meta({ data }: Route.MetaArgs) {
   const title = `Mascota perdida | ${data.pet.breed.name} | Petdidos`
@@ -35,7 +37,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     include: {
       breed: { select: { name: true } },
       history: {
-        select: { id: true, description: true, status: true, createdAt: true }
+        select: { id: true, description: true, status: true, createdAt: true },
+        orderBy: { createdAt: 'desc' }
       }
     }
   })
@@ -67,14 +70,14 @@ export async function action({ request, params }: Route.ActionArgs) {
 export default function PetDetail({ loaderData }: Route.ComponentProps) {
   const { pet, user } = loaderData
 
-  const placeholder =
-    'https://g7yqo0nubd.ufs.sh/f/TSY9Jmw2oEfqJ4gJIJAbflg9ioJVZtLn1jCpFxEdh3bQ85GR'
+  let map: any = undefined
 
   useEffect(() => {
     if (window !== undefined) {
+      if (map !== undefined) return
       const [lng, lat] = pet.location.coordinates
       // @ts-ignore
-      let map = window.L.map('map').setView([lat, lng], 15)
+      map = window.L.map('map').setView([lat, lng], 15)
       // @ts-ignore
       window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -86,34 +89,24 @@ export default function PetDetail({ loaderData }: Route.ComponentProps) {
     }
   }, [])
 
+  const fetcher = useFetcher()
+  const isBusy = fetcher.state !== 'idle'
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    fetcher.submit(formData, {
+      method: 'post',
+      flushSync: true
+    })
+    e.currentTarget.reset()
+  }
+
   return (
     <div className='container mx-auto max-w-4xl p-4'>
       <h1 className='mb-6 text-3xl font-bold'>Mascota perdida</h1>
       <div className='grid gap-6 md:grid-cols-2'>
-        <Card>
-          <CardContent className='p-0'>
-            <img
-              src={pet.photo || placeholder}
-              alt={pet.name || 'Mascota perdida'}
-              width={500}
-              height={500}
-              className='aspect-square h-auto w-full rounded-t-lg object-cover'
-            />
-          </CardContent>
-          <CardHeader>
-            <CardTitle className='flex items-center justify-between'>
-              <span>{pet.name || 'Mascota perdida (Sin nombre)'}</span>
-              <Badge variant='secondary'>{pet.breed.name}</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className='text-sm text-muted-foreground'>
-              Vista por última vez:
-            </p>
-            <p>{new Date(pet.reportDate).toLocaleString('es-MX')}</p>
-            <p className='mt-4'>{pet.description}</p>
-          </CardContent>
-        </Card>
+        <PetCard pet={pet} transitionName={`pet-detail-${pet.id}`} />
 
         <div className='space-y-6'>
           <Card>
@@ -121,7 +114,10 @@ export default function PetDetail({ loaderData }: Route.ComponentProps) {
               <CardTitle>Vista por última vez</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className='aspect-video w-full rounded-md' id='map'></div>
+              <div
+                className='z-10 aspect-video w-full rounded-md'
+                id='map'
+              ></div>
             </CardContent>
           </Card>
 
@@ -131,7 +127,11 @@ export default function PetDetail({ loaderData }: Route.ComponentProps) {
             </CardHeader>
             <CardContent>
               {user ? (
-                <form method='post' className='mb-4'>
+                <fetcher.Form
+                  method='post'
+                  className='mb-4'
+                  onSubmit={handleSubmit}
+                >
                   <Textarea
                     required
                     name='description'
@@ -143,21 +143,31 @@ export default function PetDetail({ loaderData }: Route.ComponentProps) {
                       <SelectValue placeholder='Estatus' />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={PetStatus.ALIVE}>Perdido</SelectItem>
-                      <SelectItem value={PetStatus.SAFE}>
-                        Resguardado
+                      <SelectItem value={PetStatus.ALIVE}>
+                        {statusMap['ALIVE']}
                       </SelectItem>
-                      <SelectItem value={PetStatus.INJURIED}>Herido</SelectItem>
-                      <SelectItem value={PetStatus.DEAD}>Sin vida</SelectItem>
+                      <SelectItem value={PetStatus.SAFE}>
+                        {statusMap['SAFE']}
+                      </SelectItem>
+                      <SelectItem value={PetStatus.INJURIED}>
+                        {statusMap['INJURIED']}
+                      </SelectItem>
+                      <SelectItem value={PetStatus.DEAD}>
+                        {statusMap['DEAD']}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button type='submit' className='mt-2 w-full'>
+                  <Button
+                    type='submit'
+                    disabled={isBusy}
+                    className='mt-2 w-full'
+                  >
                     Agregar actualización
                   </Button>
-                </form>
+                </fetcher.Form>
               ) : null}
               {pet.history.length ? (
-                <ScrollArea className='h-[200px] pr-4'>
+                <ScrollArea className='h-[200px] overflow-y-scroll pr-4'>
                   {pet.history.map(history => (
                     <div key={history.id} className='mb-4 last:mb-0'>
                       <div className='mb-1 flex items-center gap-2 text-sm text-muted-foreground'>
@@ -165,7 +175,9 @@ export default function PetDetail({ loaderData }: Route.ComponentProps) {
                         {new Date(history.createdAt).toLocaleString('es-MX')}
                       </div>
                       <div className='flex items-center gap-x-1'>
-                        <Badge variant='outline'>{history.status}</Badge>
+                        <Badge variant='outline'>
+                          {statusMap[history.status]}
+                        </Badge>
                         {history.description}
                       </div>
                     </div>

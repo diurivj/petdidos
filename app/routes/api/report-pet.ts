@@ -2,9 +2,10 @@ import sharp from 'sharp'
 import { redirect } from 'react-router'
 import { prisma } from '~/utils/db.server'
 import { UTApi } from 'uploadthing/server'
-import type { Route } from './+types/report-pet'
 import { getSession } from '~/utils/session.server'
 import { validateInput } from '~/utils/validate-input'
+import type { PetStatus } from '@prisma/client'
+import type { Route } from './+types/report-pet'
 
 export async function action({ request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get('Cookie'))
@@ -23,6 +24,7 @@ export async function action({ request }: Route.ActionArgs) {
   const description = validateInput(formData.get('pet-description'))
   const phone = validateInput(formData.get('reporter-phone'))
   const file = validateFileInput(formData.get('pet-photo'))
+  const status = validateInput(formData.get('pet-status'))
 
   const breedId = await prisma.breed.findUnique({
     where: {
@@ -36,7 +38,7 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   let photo = ''
-  if (file) {
+  if (file && file?.size !== 0) {
     photo = await uploadFile(file)
   }
 
@@ -45,7 +47,7 @@ export async function action({ request }: Route.ActionArgs) {
       name,
       petTypeId: type,
       breedId: breedId.id,
-      status: 'ALIVE',
+      status: status as keyof typeof PetStatus,
       description,
       photo,
       contactPhone: phone,
@@ -58,7 +60,7 @@ export async function action({ request }: Route.ActionArgs) {
     }
   })
 
-  return redirect(`/mascota/${petCreated.id}`)
+  return redirect(`/mascotas/${petCreated.id}`)
 }
 
 function validateFileInput(input: FormDataEntryValue | null) {
