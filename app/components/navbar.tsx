@@ -23,7 +23,7 @@ import type { loader } from '~/root'
 
 export function Navbar() {
   return (
-    <nav className='container mx-auto flex items-center justify-between p-4 shadow-md md:border-b md:shadow-none'>
+    <nav className='mx-auto flex w-full max-w-7xl items-center justify-between p-4 shadow-md md:border-b md:shadow-none'>
       <Link to='/' className='flex items-center gap-x-2 text-xl font-bold'>
         <PawPrint className='size-5' fill='currentColor' />
         Petdidos

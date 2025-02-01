@@ -245,7 +245,7 @@ export default function ReportPet({ loaderData }: Route.ComponentProps) {
             </SelectContent>
           </Select>
         </div>
-        <div className='col-span-full lg:col-span-1'>
+        <div className='col-span-full'>
           <Label htmlFor='pet-last-location'>
             Lugar en el que fue visto por última vez
           </Label>
@@ -279,7 +279,7 @@ export default function ReportPet({ loaderData }: Route.ComponentProps) {
             hidden
           />
         </div>
-        <div className='col-span-full space-y-0.5 lg:col-span-1'>
+        <div className='col-span-full space-y-0.5'>
           <Label htmlFor='pet-last-location-date'>
             Cuando fue visto por última vez
           </Label>

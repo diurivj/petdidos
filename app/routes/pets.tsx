@@ -63,7 +63,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     pipeline: [
       {
         $match: {
-          $or: filters.length ? [{ $and: filters }] : []
+          $or: filters.length ? [{ $and: filters }] : [{}]
         }
       },
       {
@@ -161,14 +161,16 @@ export default function Pets({ loaderData }: Route.ComponentProps) {
   }
 
   return (
-    <div className='p-6'>
-      <h4 className='text-sm'>
-        Se encontraron más de {count - 1} mascotas perdidas
-      </h4>
-      <div id='map' className='z-10 aspect-video w-full'></div>
+    <div className='mx-auto grid min-h-svh w-full max-w-7xl grid-cols-1 gap-6 bg-background p-4 md:p-10'>
+      <section className='flex flex-col gap-4'>
+        <h4 className='text-sm'>
+          Se encontraron más de {count - 1} mascotas perdidas
+        </h4>
+        <div id='map' className='z-10 aspect-video w-full'></div>
+      </section>
 
       <section
-        className='my-10 grid h-[70vh] grid-cols-1 gap-4 overflow-y-scroll'
+        className='grid h-[70vh] grid-cols-1 gap-4 overflow-y-scroll md:h-[85vh] md:grid-cols-3'
         onScroll={handleScroll}
       >
         {data.map(pet => (
@@ -183,7 +185,7 @@ export default function Pets({ loaderData }: Route.ComponentProps) {
           </Link>
         ))}
         {data.length === count ? (
-          <p className='text-center text-muted-foreground'>
+          <p className='self-end text-center text-muted-foreground'>
             Ya no hay más mascotas que mostrar
           </p>
         ) : null}

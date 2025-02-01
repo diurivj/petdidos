@@ -102,7 +102,7 @@ export default function PetDetail({ loaderData }: Route.ComponentProps) {
   }
 
   return (
-    <div className='container mx-auto max-w-4xl p-4'>
+    <div className='mx-auto max-w-7xl p-4'>
       <h1 className='mb-6 text-3xl font-bold'>Mascota perdida</h1>
       <div className='grid gap-6 md:grid-cols-2'>
         <PetCard pet={pet} transitionName={`pet-detail-${pet.id}`} />
