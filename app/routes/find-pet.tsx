@@ -1,6 +1,6 @@
 import { Binoculars } from 'lucide-react'
 import { Link } from 'react-router'
-import { Button, buttonVariants } from '~/components/ui/button'
+import { buttonVariants } from '~/components/ui/button'
 import { cn } from '~/lib/utils'
 import { prisma } from '~/utils/db.server'
 import { PetCard } from '~/components/pet-card'
@@ -64,7 +64,6 @@ export default function FindPet({ loaderData }: Route.ComponentProps) {
                 viewTransition
                 key={pet.id}
                 to={`/mascotas/${pet.id}`}
-                prefetch='viewport'
                 style={{ viewTransitionName: `pet-detail-${pet.id}` }}
               >
                 <PetCard pet={pet} />
