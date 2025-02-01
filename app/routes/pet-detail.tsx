@@ -10,7 +10,6 @@ import { Button } from '~/components/ui/button'
 import { Textarea } from '~/components/ui/textarea'
 import { getSession } from '~/utils/session.server'
 import { validateInput } from '~/utils/validate-input'
-import { PetStatus } from '@prisma/client'
 import {
   Select,
   SelectTrigger,
@@ -20,6 +19,7 @@ import {
 } from '~/components/ui/select'
 import { statusMap } from '~/utils/mappers'
 import { PetCard } from '~/components/pet-card'
+import type { PetStatus } from '@prisma/client'
 
 export function meta({ data }: Route.MetaArgs) {
   const title = `Mascota perdida | ${data.pet.breed.name} | Petdidos`
@@ -57,8 +57,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   const formData = await request.formData()
   const description = validateInput(formData.get('description'))
-  const status =
-    PetStatus[validateInput(formData.get('status')) as keyof typeof PetStatus]
+  const status = validateInput(formData.get('status')) as PetStatus
 
   await prisma.history.create({
     data: { description, status, petId: params.id }
@@ -143,16 +142,16 @@ export default function PetDetail({ loaderData }: Route.ComponentProps) {
                       <SelectValue placeholder='Estatus' />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={PetStatus.ALIVE}>
+                      <SelectItem value={'ALIVE'}>
                         {statusMap['ALIVE']}
                       </SelectItem>
-                      <SelectItem value={PetStatus.SAFE}>
+                      <SelectItem value={'SAFE'}>
                         {statusMap['SAFE']}
                       </SelectItem>
-                      <SelectItem value={PetStatus.INJURIED}>
+                      <SelectItem value={'INJURIED'}>
                         {statusMap['INJURIED']}
                       </SelectItem>
-                      <SelectItem value={PetStatus.DEAD}>
+                      <SelectItem value={'DEAD'}>
                         {statusMap['DEAD']}
                       </SelectItem>
                     </SelectContent>

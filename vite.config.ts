@@ -1,5 +1,5 @@
 import { reactRouter } from '@react-router/dev/vite'
-import { reactRouterHonoServer } from 'react-router-hono-server/dev'
+import { reactRouterHonoServer } from 'react-router-hono-server/dev' // add this
 import autoprefixer from 'autoprefixer'
 import tailwindcss from 'tailwindcss'
 import { defineConfig } from 'vite'

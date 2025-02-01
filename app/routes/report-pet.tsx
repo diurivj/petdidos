@@ -19,7 +19,6 @@ import { Combobox } from '~/components/combobox'
 import { useDebounceFetcher } from '~/utils/use-debounced-fetcher'
 import { redirect, useFetcher } from 'react-router'
 import { getSession } from '~/utils/session.server'
-import { PetStatus } from '@prisma/client'
 import { petTypeMap, statusMap } from '~/utils/mappers'
 import type { Suggestion } from '~/utils/types'
 
@@ -237,18 +236,12 @@ export default function ReportPet({ loaderData }: Route.ComponentProps) {
               <SelectValue placeholder='Estatus' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={PetStatus.ALIVE}>
-                {statusMap['ALIVE']}
-              </SelectItem>
-              <SelectItem value={PetStatus.SAFE}>
-                {statusMap['SAFE']}
-              </SelectItem>
-              <SelectItem value={PetStatus.INJURIED}>
+              <SelectItem value={'ALIVE'}>{statusMap['ALIVE']}</SelectItem>
+              <SelectItem value={'SAFE'}>{statusMap['SAFE']}</SelectItem>
+              <SelectItem value={'INJURIED'}>
                 {statusMap['INJURIED']}
               </SelectItem>
-              <SelectItem value={PetStatus.DEAD}>
-                {statusMap['DEAD']}
-              </SelectItem>
+              <SelectItem value={'DEAD'}>{statusMap['DEAD']}</SelectItem>
             </SelectContent>
           </Select>
         </div>
