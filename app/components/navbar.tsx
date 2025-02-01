@@ -61,6 +61,7 @@ function NavbarMenu() {
         <div className='mt-4 flex flex-col gap-4'>
           {links.map(link => (
             <NavLink
+              reloadDocument
               key={link.to}
               to={link.to}
               onClick={() => setOpen(false)}

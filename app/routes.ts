@@ -15,8 +15,11 @@ export default [
   route('/auth/callback', 'routes/auth-redirect.tsx'),
   route('/mascotas/:id', 'routes/pet-detail.tsx'),
   ...prefix('api', [
-    route('get-location-details', 'routes/api/get-location-details.ts'),
-    route('get-location-suggestions', 'routes/api/get-location-suggestions.ts'),
-    route('report-pet', 'routes/api/report-pet.ts')
+    route('get-location-details', 'routes/api.server/get-location-details.ts'),
+    route(
+      'get-location-suggestions',
+      'routes/api.server/get-location-suggestions.ts'
+    ),
+    route('report-pet', 'routes/api.server/report-pet.ts')
   ])
 ] satisfies RouteConfig

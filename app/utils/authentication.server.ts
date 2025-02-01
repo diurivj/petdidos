@@ -23,6 +23,10 @@ if (!process.env.CLIENT_SECRET) {
   throw new Error('Client Secret is not defined')
 }
 
+if (!process.env.REDIRECT_URI) {
+  throw new Error('Redirect URI is not defined')
+}
+
 export const authenticator = new Authenticator<User>()
 
 authenticator.use(
@@ -33,7 +37,7 @@ authenticator.use(
       clientSecret: process.env.CLIENT_SECRET,
       authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
       tokenEndpoint: 'https://oauth2.googleapis.com/token',
-      redirectURI: 'http://localhost:5173/auth/callback',
+      redirectURI: `${process.env.REDIRECT_URI}/auth/callback`,
       tokenRevocationEndpoint: 'https://oauth2.googleapis.com/revoke',
       scopes: ['openid', 'email', 'profile']
     },

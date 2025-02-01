@@ -11,7 +11,7 @@ import {
   SelectValue
 } from '~/components/ui/select'
 import type { Route } from './+types/report-pet'
-import { type action as fetcherAction } from './api/get-location-details'
+import { type action as fetcherAction } from './api.server/get-location-details'
 import { prisma } from '~/utils/db.server'
 import { MAPBOX_SESSION } from '~/utils/constants'
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'

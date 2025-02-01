@@ -24,7 +24,7 @@ import { petTypeMap } from '~/utils/mappers'
 import { Combobox } from './combobox'
 import { Accordion } from './ui/accordion'
 import { useDebounceFetcher } from '~/utils/use-debounced-fetcher'
-import type { action as fetcherAction } from '~/routes/api/get-location-details'
+import type { action as fetcherAction } from '~/routes/api.server/get-location-details'
 import type { action } from '~/routes/report-pet'
 import type { Suggestion } from '~/utils/types'
 

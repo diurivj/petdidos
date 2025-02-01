@@ -1,17 +1,10 @@
 import { Button } from '~/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '~/components/ui/card'
 import { authenticator } from '~/utils/authentication.server'
 import { getSession } from '~/utils/session.server'
 import { Link, redirect } from 'react-router'
+import { PawPrint } from 'lucide-react'
 
 import type { Route } from './+types/login'
-import { PawPrint } from 'lucide-react'
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: 'Iniciar sesión | Petdidos' }]

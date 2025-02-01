@@ -1,5 +1,6 @@
 import { MAPBOX_SESSION } from '~/utils/constants'
 import type { Suggestion } from '~/utils/types'
+import type { Route } from './+types/get-location-suggestions'
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData()
