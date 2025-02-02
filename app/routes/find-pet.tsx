@@ -5,11 +5,26 @@ import { cn } from '~/lib/utils'
 import { prisma } from '~/utils/db.server'
 import { PetCard } from '~/components/pet-card'
 import { FindPetFilters } from '~/components/find-pet-filters'
+import { getMeta } from '~/utils/seo'
 
 import type { Route } from './+types/find-pet'
 
 export function meta() {
-  return [{ title: 'Encontrar mascota | Petdidos' }]
+  return [
+    {
+      title: 'Encontrar mascota | Petdidos',
+      ...getMeta({
+        'og:description': 'Encuentra tu mascota perdida.',
+        'og:image': 'https://petdidos.fly.dev/assets/meta.jpg',
+        'og:site_name': 'Petdidos',
+        'og:title': 'Petdidos',
+        'twitter:card': 'summary_large_image',
+        'twitter:image': 'https://petdidos.fly.dev/assets/meta.jpg',
+        'twitter:title': 'Petdidos',
+        'twitter:description': 'Encuentra tu mascota perdida.'
+      })
+    }
+  ]
 }
 
 export async function loader() {

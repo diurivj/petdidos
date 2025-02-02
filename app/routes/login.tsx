@@ -3,11 +3,26 @@ import { authenticator } from '~/utils/authentication.server'
 import { getSession } from '~/utils/session.server'
 import { Link, redirect } from 'react-router'
 import { PawPrint } from 'lucide-react'
+import { getMeta } from '~/utils/seo'
 
 import type { Route } from './+types/login'
 
 export function meta({}: Route.MetaArgs) {
-  return [{ title: 'Iniciar sesión | Petdidos' }]
+  return [
+    {
+      title: 'Iniciar sesión | Petdidos',
+      ...getMeta({
+        'og:description': 'Encuentra tu mascota perdida.',
+        'og:image': 'https://petdidos.fly.dev/assets/meta.jpg',
+        'og:site_name': 'Petdidos',
+        'og:title': 'Petdidos',
+        'twitter:card': 'summary_large_image',
+        'twitter:image': 'https://petdidos.fly.dev/assets/meta.jpg',
+        'twitter:title': 'Petdidos',
+        'twitter:description': 'Encuentra tu mascota perdida.'
+      })
+    }
+  ]
 }
 
 export async function action({ request }: Route.ActionArgs) {
