@@ -35,11 +35,11 @@ export function meta({ data }: Route.MetaArgs) {
     ...getMeta({
       'og:description': data.pet.description,
       'og:image': data.pet.photo || placeholder,
-      'og:site_name': `${data.pet.name || 'Mascota perdid'} | Petdidos`,
-      'og:title': `${data.pet.name || 'Mascota perdid'} | Petdidos`,
+      'og:site_name': `${data.pet.name || 'Mascota perdida'} | Petdidos`,
+      'og:title': `${data.pet.name || 'Mascota perdida'} | Petdidos`,
       'twitter:card': 'summary_large_image',
       'twitter:image': data.pet.photo || placeholder,
-      'twitter:title': `${data.pet.name || 'Mascota perdid'} | Petdidos`,
+      'twitter:title': `${data.pet.name || 'Mascota perdida'} | Petdidos`,
       'twitter:description': data.pet.description
     })
   ]
