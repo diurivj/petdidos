@@ -7,10 +7,12 @@ import {
   ScrollRestoration
 } from 'react-router'
 import { Navbar } from './components/navbar'
+import { getSession } from './utils/session.server'
+import { Toaster } from './components/ui/toaster'
+
 import type { Route } from './+types/root'
 
 import stylesheet from './app.css?url'
-import { getSession } from './utils/session.server'
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -69,6 +71,7 @@ export default function App() {
     <>
       <Navbar />
       <Outlet />
+      <Toaster />
     </>
   )
 }

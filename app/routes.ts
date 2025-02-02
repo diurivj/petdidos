@@ -20,6 +20,7 @@ export default [
       'get-location-suggestions',
       'routes/api.server/get-location-suggestions.ts'
     ),
-    route('report-pet', 'routes/api.server/report-pet.ts')
+    route('report-pet', 'routes/api.server/report-pet.ts'),
+    route('update-pet-status', 'routes/api.server/update-pet-status.ts')
   ])
 ] satisfies RouteConfig

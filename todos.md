@@ -1,5 +1,5 @@
 ### Final touches
-- [ ] Arreglar el session token de mapbox
+- [x] Arreglar el session token de mapbox
 - [ ] Arreglar buscador de raza (otro / otra)
 - [ ] Landing page
 
@@ -30,5 +30,5 @@
 - [x] Agregar filter para ubicación
 
 ### 26/01/2025
-- [ ] Pets page, inputs, map, cards
+- [x] Pets page, inputs, map, cards
 - [x] Infinite scroll

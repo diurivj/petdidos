@@ -1,6 +1,6 @@
 import type { Route } from './+types/pet-detail'
 import { useEffect, type FormEvent } from 'react'
-import { redirect, useFetcher } from 'react-router'
+import { Form, redirect, useFetcher } from 'react-router'
 import { Badge } from '~/components/ui/badge'
 import { ScrollArea } from '@radix-ui/react-scroll-area'
 import { AlertCircle, Calendar } from 'lucide-react'
@@ -20,6 +20,8 @@ import {
 import { statusMap } from '~/utils/mappers'
 import { PetCard } from '~/components/pet-card'
 import type { PetStatus } from '@prisma/client'
+import { Label } from '~/components/ui/label'
+import { useToast } from '~/hooks/use-toast'
 
 export function meta({ data }: Route.MetaArgs) {
   const title = `Mascota perdida | ${data.pet.breed.name} | Petdidos`
@@ -45,7 +47,10 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   if (!pet) {
     throw redirect('/')
   }
-  return { pet, user: Boolean(userId) }
+
+  const isReporter = pet.reporterId === userId
+
+  return { pet, isReporter, user: Boolean(userId) }
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
@@ -54,7 +59,6 @@ export async function action({ request, params }: Route.ActionArgs) {
   if (!userId) {
     throw new Error(`401 - Unauthorized`)
   }
-
   const formData = await request.formData()
   const description = validateInput(formData.get('description'))
   const status = validateInput(formData.get('status')) as PetStatus
@@ -67,7 +71,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 }
 
 export default function PetDetail({ loaderData }: Route.ComponentProps) {
-  const { pet, user } = loaderData
+  const { pet, user, isReporter } = loaderData
 
   let map: any = undefined
 
@@ -89,6 +93,7 @@ export default function PetDetail({ loaderData }: Route.ComponentProps) {
   }, [])
 
   const fetcher = useFetcher()
+  const editFetcher = useFetcher()
   const isBusy = fetcher.state !== 'idle'
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -101,11 +106,56 @@ export default function PetDetail({ loaderData }: Route.ComponentProps) {
     e.currentTarget.reset()
   }
 
+  const optimisticStatus = editFetcher.formData?.get('status')
+
+  const optimisticPet = {
+    ...pet,
+    status: optimisticStatus ?? pet.status
+  }
+
+  const { toast } = useToast()
+
   return (
     <div className='mx-auto max-w-7xl p-4'>
-      <h1 className='mb-6 text-3xl font-bold'>Mascota perdida</h1>
+      <div className='mb-6 flex flex-col gap-2'>
+        <h1 className='text-3xl font-bold'>Mascota perdida</h1>
+        {isReporter ? (
+          <editFetcher.Form action='/api/update-pet-status' method='post'>
+            <Label>Modificar estatus</Label>
+            <Select
+              name='status'
+              defaultValue={pet.status}
+              onValueChange={value => {
+                const formData = new FormData()
+                formData.append('status', value)
+                formData.append('pet-id', pet.id)
+                editFetcher.submit(formData, {
+                  method: 'post',
+                  action: '/api/update-pet-status'
+                })
+                toast({
+                  title: '¡Estatus actualizado!',
+                  description: `El nuevo estatus es ${statusMap[value as PetStatus]}`
+                })
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder='Estatus' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={'ALIVE'}>{statusMap['ALIVE']}</SelectItem>
+                <SelectItem value={'SAFE'}>{statusMap['SAFE']}</SelectItem>
+                <SelectItem value={'INJURIED'}>
+                  {statusMap['INJURIED']}
+                </SelectItem>
+                <SelectItem value={'DEAD'}>{statusMap['DEAD']}</SelectItem>
+              </SelectContent>
+            </Select>
+          </editFetcher.Form>
+        ) : null}
+      </div>
       <div className='grid gap-6 md:grid-cols-2'>
-        <PetCard pet={pet} transitionName={`pet-detail-${pet.id}`} />
+        <PetCard pet={optimisticPet} transitionName={`pet-detail-${pet.id}`} />
 
         <div className='space-y-6'>
           <Card>
