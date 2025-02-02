@@ -1,12 +1,11 @@
 ### Final touches
 - [ ] Arreglar el session token de mapbox
 - [ ] Arreglar buscador de raza (otro / otra)
-- [ ] Arreglar asincronizidad del mapa en el search box
 - [ ] Landing page
 
 ### Nice to have 
-- [ ] Ver porque el ScrollArea no funciona como deberia
-- [ ] Tener smart redirect para rutas autenticadas
+- [x] Ver porque el ScrollArea no funciona como deberia
+- [x] Tener smart redirect para rutas autenticadas
 - [x] Arreglar autofocus en navbar
 - [ ] Agregar mas formas de autenticacion
 - [x] Mejor login page
@@ -32,4 +31,4 @@
 
 ### 26/01/2025
 - [ ] Pets page, inputs, map, cards
-- [ ] Infinite scroll
+- [x] Infinite scroll

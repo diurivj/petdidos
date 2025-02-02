@@ -4,6 +4,7 @@ import { formatRawPets } from '~/utils/formatter'
 import { PetCard } from '~/components/pet-card'
 import { Link, useFetcher, useSearchParams } from 'react-router'
 import type { Route } from './+types/pets'
+import { FindPetFilters } from '~/components/find-pet-filters'
 
 const KM = 0.00015781359160347566 as const
 const limit = 5 as const
@@ -34,6 +35,14 @@ export async function loader({ request }: Route.LoaderArgs) {
   const [lat, lng] = coordinates ? coordinates?.split(',') : []
 
   const filters = []
+
+  const breeds = await prisma.breed.findMany({
+    select: { name: true, petTypeId: true, id: true }
+  })
+
+  const petTypes = await prisma.petType.findMany({
+    select: { name: true, id: true }
+  })
 
   if (petName) {
     filters.push({
@@ -98,7 +107,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const count = result.totalCount[0].count as number
 
   const pets = formatRawPets(result.results as unknown as Array<any>)
-  return { pets, count }
+  return { breeds, petTypes, pets, count }
 }
 
 export default function Pets({ loaderData }: Route.ComponentProps) {
@@ -116,7 +125,7 @@ export default function Pets({ loaderData }: Route.ComponentProps) {
       if (ref.current) return
 
       // @ts-ignore
-      let map = window.L.map('map').fitWorld()
+      let map = window.L.map('main-map').fitWorld()
       // @ts-ignore
       window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -164,9 +173,12 @@ export default function Pets({ loaderData }: Route.ComponentProps) {
     <div className='mx-auto grid min-h-svh w-full max-w-7xl grid-cols-1 gap-6 bg-background p-4 md:p-10'>
       <section className='flex flex-col gap-4'>
         <h4 className='text-sm'>
-          Se encontraron más de {count - 1} mascotas perdidas
+          {count > 1
+            ? `Se encontraron ${count} mascotas perdidas`
+            : 'Se encontró 1 mascota perdida'}{' '}
         </h4>
-        <div id='map' className='z-10 aspect-video w-full'></div>
+        <FindPetFilters />
+        <div id='main-map' className='z-10 aspect-video w-full'></div>
       </section>
 
       <section

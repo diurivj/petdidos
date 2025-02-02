@@ -1,6 +1,5 @@
 import { Label } from './ui/label'
 import {
-  Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger

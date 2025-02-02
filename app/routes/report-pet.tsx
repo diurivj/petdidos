@@ -1,7 +1,7 @@
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Textarea } from '~/components/ui/textarea'
-import { Info } from 'lucide-react'
+import { Info, MapPin } from 'lucide-react'
 import { Button } from '~/components/ui/button'
 import {
   Select,
@@ -261,9 +261,10 @@ export default function ReportPet({ loaderData }: Route.ComponentProps) {
               {suggestions?.map(s => (
                 <li
                   key={s.mapbox_id}
-                  className='rounded-lg border p-2'
+                  className='grid grid-cols-[16px_1fr] items-center gap-2 rounded-lg border p-2'
                   onClick={() => handleSelectAddress(s)}
                 >
+                  <MapPin className='size-4' />
                   {s.full_address}
                 </li>
               ))}

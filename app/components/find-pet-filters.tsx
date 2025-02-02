@@ -1,4 +1,4 @@
-import { Form, useFetcher, useLoaderData } from 'react-router'
+import { Form, useFetcher, useLoaderData, useSearchParams } from 'react-router'
 import { Button } from './ui/button'
 import {
   Dialog,
@@ -27,13 +27,15 @@ import { useDebounceFetcher } from '~/utils/use-debounced-fetcher'
 import type { action as fetcherAction } from '~/routes/api.server/get-location-details'
 import type { action } from '~/routes/report-pet'
 import type { Suggestion } from '~/utils/types'
+import { MapPin } from 'lucide-react'
 
 export function FindPetFilters() {
   const { petTypes, breeds } = useLoaderData<typeof loader>()
 
-  const [petName, setPetName] = useState('')
-  const [petType, setPetType] = useState('')
-  const [petBreed, setPetBreed] = useState('')
+  const [searchParams] = useSearchParams()
+  const [petName, setPetName] = useState(searchParams.get('pet-name') || '')
+  const [petType, setPetType] = useState(searchParams.get('pet-type') || '')
+  const [petBreed, setPetBreed] = useState(searchParams.get('pet-breed') || '')
   const [address, setAddress] = useState('')
   const [showSuggestion, setShowSuggestions] = useState(false)
   const [coordinates, setCoordinates] = useState<number[]>()
@@ -117,6 +119,14 @@ export function FindPetFilters() {
     setShowSuggestions(false)
   }
 
+  function handleResetForm() {
+    setPetName('')
+    setPetType('')
+    setPetBreed('')
+    setAddress('')
+    setCoordinates(undefined)
+  }
+
   const options = useMemo(() => {
     return breeds
       .filter(breed => {
@@ -147,7 +157,7 @@ export function FindPetFilters() {
           </DialogDescription>
         </DialogHeader>
 
-        <Form className='my-4' action='/mascotas' id='find-pet'>
+        <Form reloadDocument className='my-4' action='/mascotas' id='find-pet'>
           <input name='pet-name' value={petName} required readOnly hidden />
           <input name='pet-type' value={petType} required readOnly hidden />
           <input name='pet-breed' value={petBreed} required readOnly hidden />
@@ -212,9 +222,10 @@ export function FindPetFilters() {
                   {suggestions?.map(s => (
                     <li
                       key={s.mapbox_id}
-                      className='rounded-lg border p-2'
+                      className='grid grid-cols-[16px_1fr] items-center gap-2 rounded-lg border p-2'
                       onClick={() => handleSelectAddress(s)}
                     >
+                      <MapPin className='size-4' />
                       {s.full_address}
                     </li>
                   ))}
@@ -234,6 +245,9 @@ export function FindPetFilters() {
           </Button>
           <Button type='submit' form='find-pet'>
             Buscar
+          </Button>
+          <Button type='button' variant='link' onClick={handleResetForm}>
+            Limpiar busqueda
           </Button>
         </DialogFooter>
       </DialogContent>
