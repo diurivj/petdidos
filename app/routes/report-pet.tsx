@@ -21,6 +21,7 @@ import { redirect, useFetcher } from 'react-router'
 import { getSession } from '~/utils/session.server'
 import { petTypeMap, statusMap } from '~/utils/mappers'
 import type { Suggestion } from '~/utils/types'
+import { DatePicker } from '~/components/date-picker'
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: 'Reportar mascota | Petdidas' }]
@@ -280,17 +281,19 @@ export default function ReportPet({ loaderData }: Route.ComponentProps) {
             hidden
           />
         </div>
-        <div className='col-span-full space-y-0.5'>
+        <div className='col-span-full flex flex-col space-y-0.5'>
           <Label htmlFor='pet-last-location-date'>
             Cuando fue visto por última vez
           </Label>
-          <Input
+          {/*<Input
             id='pet-last-location-date'
             name='pet-last-location-date'
             className='text-sm'
             type='datetime-local'
             required
-          />
+          />*/}
+
+          <DatePicker />
         </div>
         <div className='col-span-full space-y-0.5'>
           <Label htmlFor='pet-description'>Descripción</Label>
