@@ -104,7 +104,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   })
 
   const result = (rawPets as unknown as Array<any>)[0]
-  const count = result.totalCount[0].count as number
+  const count = (result?.totalCount[0]?.count as number) || 0
 
   const pets = formatRawPets(result.results as unknown as Array<any>)
   return { breeds, petTypes, pets, count }
@@ -132,7 +132,9 @@ export default function Pets({ loaderData }: Route.ComponentProps) {
         attribution: '© OpenStreetMap'
       }).addTo(map)
 
-      const [lng, lat] = pets[0].location.coordinates
+      if (!pets.length) return
+
+      const [lng, lat] = pets?.[0].location.coordinates
       map.setView([lat, lng], 10)
 
       pets.map(pet => {
@@ -173,9 +175,9 @@ export default function Pets({ loaderData }: Route.ComponentProps) {
     <div className='mx-auto grid min-h-svh w-full max-w-7xl grid-cols-1 gap-6 bg-background p-4 md:p-10'>
       <section className='flex flex-col gap-4'>
         <h4 className='text-sm'>
-          {count > 1
-            ? `Se encontraron ${count} mascotas perdidas`
-            : 'Se encontró 1 mascota perdida'}{' '}
+          {count === 1
+            ? 'Se encontró 1 mascota perdida'
+            : `Se encontraron ${count} mascotas perdidas`}
         </h4>
         <FindPetFilters />
         <div id='main-map' className='z-10 aspect-video w-full'></div>

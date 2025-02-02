@@ -2,6 +2,7 @@
 - [x] Arreglar el session token de mapbox
 - [ ] Arreglar buscador de raza (otro / otra)
 - [ ] Landing page
+- [ ] Favicon
 
 ### Nice to have 
 - [x] Ver porque el ScrollArea no funciona como deberia

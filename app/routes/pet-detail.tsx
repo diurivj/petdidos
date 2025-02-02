@@ -1,6 +1,6 @@
 import type { Route } from './+types/pet-detail'
 import { useEffect, type FormEvent } from 'react'
-import { Form, redirect, useFetcher } from 'react-router'
+import { redirect, useFetcher } from 'react-router'
 import { Badge } from '~/components/ui/badge'
 import { ScrollArea } from '@radix-ui/react-scroll-area'
 import { AlertCircle, Calendar } from 'lucide-react'
@@ -19,9 +19,9 @@ import {
 } from '~/components/ui/select'
 import { statusMap } from '~/utils/mappers'
 import { PetCard } from '~/components/pet-card'
-import type { PetStatus } from '@prisma/client'
 import { Label } from '~/components/ui/label'
 import { useToast } from '~/hooks/use-toast'
+import type { PetStatus } from '@prisma/client'
 
 export function meta({ data }: Route.MetaArgs) {
   const title = `Mascota perdida | ${data.pet.breed.name} | Petdidos`
