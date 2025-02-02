@@ -1,12 +1,23 @@
 import { Cat, Dog, MapPinned } from 'lucide-react'
-import type { Route } from './+types/home'
-import { Button, buttonVariants } from '~/components/ui/button'
+import { buttonVariants } from '~/components/ui/button'
 import { Link } from 'react-router'
+import { getMeta } from '~/utils/seo'
+import type { Route } from './+types/home'
 
 export function meta({}: Route.MetaArgs) {
   return [
     { title: 'Petdidos' },
-    { name: 'description', content: 'Encuentra tu mascota perdida.' }
+    { name: 'description', content: 'Encuentra tu mascota perdida.' },
+    ...getMeta({
+      'og:description': 'Encuentra tu mascota perdida.',
+      'og:image': 'https://petdidos.fly.dev/assets/meta.jpg',
+      'og:site_name': 'Petdidos',
+      'og:title': 'Petdidos',
+      'twitter:card': 'summary_large_image',
+      'twitter:image': 'https://petdidos.fly.dev/assets/meta.jpg',
+      'twitter:title': 'Petdidos',
+      'twitter:description': 'Encuentra tu mascota perdida.'
+    })
   ]
 }
 

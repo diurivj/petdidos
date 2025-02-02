@@ -22,12 +22,26 @@ import { PetCard } from '~/components/pet-card'
 import { Label } from '~/components/ui/label'
 import { useToast } from '~/hooks/use-toast'
 import type { PetStatus } from '@prisma/client'
+import { getMeta } from '~/utils/seo'
 
 export function meta({ data }: Route.MetaArgs) {
   const title = `Mascota perdida | ${data.pet.breed.name} | Petdidos`
+  const placeholder =
+    'https://g7yqo0nubd.ufs.sh/f/TSY9Jmw2oEfqJ4gJIJAbflg9ioJVZtLn1jCpFxEdh3bQ85GR'
+
   return [
     { title: title },
-    { name: 'description', value: data.pet.description }
+    { name: 'description', value: data.pet.description },
+    ...getMeta({
+      'og:description': data.pet.description,
+      'og:image': data.pet.photo || placeholder,
+      'og:site_name': `${data.pet.name || 'Mascota perdid'} | Petdidos`,
+      'og:title': `${data.pet.name || 'Mascota perdid'} | Petdidos`,
+      'twitter:card': 'summary_large_image',
+      'twitter:image': data.pet.photo || placeholder,
+      'twitter:title': `${data.pet.name || 'Mascota perdid'} | Petdidos`,
+      'twitter:description': data.pet.description
+    })
   ]
 }
 
