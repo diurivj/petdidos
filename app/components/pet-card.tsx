@@ -39,7 +39,11 @@ export function PetCard({ pet, transitionName }: PetCardProps) {
       </CardHeader>
       <CardContent>
         <p className='text-sm text-muted-foreground'>Vista por última vez:</p>
-        <p>{new Date(pet.reportDate).toLocaleString('es-MX')}</p>
+        <p>
+          {new Date(pet.reportDate).toLocaleDateString('es-MX', {
+            dateStyle: 'long'
+          })}
+        </p>
         <p className='mt-4'>{pet.description}</p>
       </CardContent>
     </Card>
